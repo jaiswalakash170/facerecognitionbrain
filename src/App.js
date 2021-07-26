@@ -1,13 +1,16 @@
 import react, {Component} from 'react';
 import './App.css';
+import Navigation from './components/navigation/navigation'
 
 class App extends Component {
   
     render() {
         return (
             <div className="App">
-                <header className="App-header">
-                </header>
+                <Navigation />
+                {/*<Logo />
+                <ImageLinkForm />
+                <FaceRecognition />*/}
             </div>
         );
     }
