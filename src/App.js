@@ -1,6 +1,7 @@
 import react, {Component} from 'react';
 import './App.css';
 import Navigation from './components/navigation/navigation'
+import 'tachyons';
 
 class App extends Component {
   
