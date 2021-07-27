@@ -39,6 +39,7 @@ class App extends Component {
     }
 
     displayFaceBox = (box) => {
+        console.log(box);
         this.setState({box: box});
     }
 
@@ -49,9 +50,8 @@ class App extends Component {
     onSubmit = () => {
         this.setState({imageURL: this.state.input});
         app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-            .then(response => this.calculateFaceLocation(response)
-            .catch(error => console.log(error))
-        );
+            .then(response => this.displayFaceBox(this.calculateFaceLocation(response)))
+            .catch(error => console.log(error));
     }
 
     render() {
@@ -66,7 +66,7 @@ class App extends Component {
                 <ImageLinkForm 
                     onInputChange={this.onInputChange} 
                     onButtonSubmit={this.onSubmit}/>
-                <FaceRecognition imageURL={this.state.imageURL}/>
+                <FaceRecognition box={this.state.box} imageURL={this.state.imageURL}/>
             </div>
         );
     }
