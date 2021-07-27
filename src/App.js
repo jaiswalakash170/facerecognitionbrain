@@ -11,7 +11,7 @@ import particleOptions from './particles.json';
 import Clarifai from 'clarifai';
 
 const app = new Clarifai.App({
-    apiKey: 'YOUR_KEY'
+    apiKey: '3b764f3c87c44a1cbd5b480a14631563'
 });
 
 class App extends Component {
@@ -19,8 +19,27 @@ class App extends Component {
         super();
         this.state = {
             input: '',
-            imageURL: ''
+            imageURL: '',
+            box: {}
         }
+    }
+
+    calculateFaceLocation = (data) => {
+        const clarifyFace = data.outputs[0].data.regions[0].region_info.bounding_box;
+        const image = document.getElementById("inputimage");
+        const width = Number(image.width);
+        const height = Number(image.height);
+        console.log(width, height);
+        return {
+            leftColumn: clarifyFace.left_col * width,
+            topRow: clarifyFace.top_row * height,
+            rightColumn: width - (clarifyFace.right_col * width),
+            bottomRow: height - (clarifyFace.bottom_row * height)
+        };
+    }
+
+    displayFaceBox = (box) => {
+        this.setState({box: box});
     }
 
     onInputChange = (event) => {
@@ -29,15 +48,9 @@ class App extends Component {
 
     onSubmit = () => {
         this.setState({imageURL: this.state.input});
-        app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input).then(
-            function(response){
-                // Do something with response
-                console.log(response);
-                console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
-            },
-            function(error){
-                // There was some error
-            }
+        app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+            .then(response => this.calculateFaceLocation(response)
+            .catch(error => console.log(error))
         );
     }
 
