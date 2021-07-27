@@ -7,7 +7,11 @@ import ImageLinkForm from './components/imagelinkform/imagelinkform';
 import Rank from './components/rank/rank';
 import 'tachyons';
 import particleOptions from './particles.json';
+import Clarifai from 'clarifai';
 
+const app = new Clarifai.App({
+    apiKey: '3b764f3c87c44a1cbd5b480a14631563'
+});
 
 class App extends Component {
     constructor(){
@@ -23,6 +27,15 @@ class App extends Component {
 
     onSubmit = () => {
         console.log("Click");
+        app.models.predict(Clarifai.FACE_DETECT_MODEL, "https://samples.clarifai.com/face-det.jpg").then(
+            function(response){
+                // Do something with response
+                console.log(response);
+            },
+            function(error){
+                // There was some error
+            }
+        );
     }
 
     render() {
