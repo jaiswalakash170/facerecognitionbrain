@@ -6,6 +6,7 @@ import Logo from './components/logo/logo';
 import ImageLinkForm from './components/imagelinkform/imagelinkform';
 import Rank from './components/rank/rank';
 import FaceRecognition from './components/facerecognition/facerecognition';
+import SignIn from './components/signin/signin'
 import 'tachyons';
 import particleOptions from './particles.json';
 import Clarifai from 'clarifai';
@@ -61,6 +62,7 @@ class App extends Component {
                     options={particleOptions}
                 />
                 <Navigation />
+                <SignIn />
                 <Logo />
                 <Rank />
                 <ImageLinkForm 
