@@ -10,10 +10,9 @@ import SignIn from './components/signin/signin'
 import 'tachyons';
 import particleOptions from './particles.json';
 import Clarifai from 'clarifai';
+import {clarifai_api_key} from './api_key';
 
-const app = new Clarifai.App({
-    apiKey: '3b764f3c87c44a1cbd5b480a14631563'
-});
+const app = new Clarifai.App(clarifai_api_key);
 
 class App extends Component {
     constructor(){
