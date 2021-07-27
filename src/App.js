@@ -5,6 +5,7 @@ import Navigation from './components/navigation/navigation';
 import Logo from './components/logo/logo';
 import ImageLinkForm from './components/imagelinkform/imagelinkform';
 import Rank from './components/rank/rank';
+import FaceRecognition from './components/facerecognition/facerecognition';
 import 'tachyons';
 import particleOptions from './particles.json';
 import Clarifai from 'clarifai';
@@ -50,9 +51,7 @@ class App extends Component {
                 <ImageLinkForm 
                     onInputChange={this.onInputChange} 
                     onButtonSubmit={this.onSubmit}/>
-                {/*
-                
-                <FaceRecognition />*/}
+                <FaceRecognition />
             </div>
         );
     }
