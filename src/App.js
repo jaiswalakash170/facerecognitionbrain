@@ -11,7 +11,7 @@ import particleOptions from './particles.json';
 import Clarifai from 'clarifai';
 
 const app = new Clarifai.App({
-    apiKey: '3b764f3c87c44a1cbd5b480a14631563'
+    apiKey: 'YOUR_KEY'
 });
 
 class App extends Component {
@@ -33,6 +33,7 @@ class App extends Component {
             function(response){
                 // Do something with response
                 console.log(response);
+                console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
             },
             function(error){
                 // There was some error
