@@ -6,7 +6,8 @@ import Logo from './components/logo/logo';
 import ImageLinkForm from './components/imagelinkform/imagelinkform';
 import Rank from './components/rank/rank';
 import FaceRecognition from './components/facerecognition/facerecognition';
-import SignIn from './components/signin/signin'
+import SignIn from './components/signin/signin';
+import Register from './components/register/register';
 import 'tachyons';
 import particleOptions from './particles.json';
 import Clarifai from 'clarifai';
@@ -66,16 +67,19 @@ class App extends Component {
                     options={particleOptions}
                 />
                 <Navigation onRouteChange={this.onRouteChange} />
-                { this.state.route == 'signin' ?
-                    <SignIn onRouteChange={this.onRouteChange} />
-                    :<div>
+                { this.state.route == 'home' ?
+                    <div>
                         <Logo />
                         <Rank />
                         <ImageLinkForm 
-                            onInputChange={this.onInputChange} 
-                            onButtonSubmit={this.onSubmit}/>
+                        onInputChange={this.onInputChange} 
+                        onButtonSubmit={this.onSubmit}/>
                         <FaceRecognition box={this.state.box} imageURL={this.state.imageURL}/>
                     </div>
+                    :(this.state.route == 'signin'?
+                    <SignIn onRouteChange={this.onRouteChange} />
+                    :<Register />
+                    )
                 }
             </div>
         );
