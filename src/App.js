@@ -28,7 +28,7 @@ class App extends Component {
                 id: '',
                 name: '',
                 email: '',
-                entries: '',
+                entries: 0,
                 joined: ''
             }
         }
@@ -91,7 +91,7 @@ class App extends Component {
     }
 
     render() {
-        const {isSignedIn, imageURL, route, box} = this.state;
+        const {isSignedIn, imageURL, route, box, user} = this.state;
         return (
             <div className="App">
                 <Particles
@@ -101,14 +101,14 @@ class App extends Component {
                 { route == 'home' ?
                     <div>
                         <Logo />
-                        <Rank />
+                        <Rank name={user.name} entries={user.entries} />
                         <ImageLinkForm 
                         onInputChange={this.onInputChange} 
                         onButtonSubmit={this.onSubmit}/>
                         <FaceRecognition box={box} imageURL={imageURL}/>
                     </div>
                     :(route == 'signin'?
-                    <SignIn onRouteChange={this.onRouteChange} />
+                    <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
                     :<Register onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
                     )
                 }

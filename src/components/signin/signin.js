@@ -27,14 +27,21 @@ class SignIn extends Component {
                 password: this.state.signInPassword
             })
         })
-        .then(response => response.json())
-        .then(data => {
-            if(data === 'success'){
-                this.props.onRouteChange('home');
+        .then(response => {
+            if(response.ok){
+                return response.json()
             } else{
-                console.log(data);
+                throw new Error(response.status);
             }
         })
+        .then(user => {
+            console.log(user);
+            this.props.loadUser(user);
+            this.props.onRouteChange('home');
+        })
+        .catch(err => {
+            console.log("Error signing in: STATUS - ", err);
+        });
     }
 
     render() {
