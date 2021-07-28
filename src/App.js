@@ -10,10 +10,7 @@ import SignIn from './components/signin/signin';
 import Register from './components/register/register';
 import 'tachyons';
 import particleOptions from './particles.json';
-import Clarifai from 'clarifai';
-import {clarifai_api_key} from './api_key';
 
-const app = new Clarifai.App(clarifai_api_key);
 const initialState = {
     input: '',
     imageURL: '',
@@ -77,37 +74,40 @@ class App extends Component {
 
     onSubmit = () => {
         this.setState({imageURL: this.state.input});
-        app.models
-            .predict(
-                Clarifai.FACE_DETECT_MODEL, 
-                this.state.input
-            )
-            .then(response => {
-                if(response){
-                    fetch('http://localhost:3001/image', {
-                            method: 'put',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({
-                                id: this.state.user.id
-                            })
-                        }
-                    ).then(response => {
-                        if(response.ok){
-                            return response.json();
-                        } else{
-                            throw new Error("Error updating the rank");
-                        }
-                    })
-                    .then(count => {
-                        this.setState(Object.assign(this.state.user, {entries: count}));
-                    })
-                    .catch(error => console.log(error));
-                    return this.displayFaceBox(this.calculateFaceLocation(response))
-                } else {
-                    throw new Error("Error from Clarifai API");
-                }
+        fetch('http://localhost:3001/imageurl', {
+            method: 'post',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                input: this.state.input
             })
-            .catch(error => console.log(error));
+        })
+        .then(response => response.json())
+        .then(response => {
+            if(response){
+                fetch('http://localhost:3001/image', {
+                    method: 'put',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        id: this.state.user.id
+                    })
+                })
+                .then(response => {
+                    if(response.ok){
+                        return response.json();
+                    } else{
+                        throw new Error("Error updating the rank");
+                    }
+                })
+                .then(count => {
+                    this.setState(Object.assign(this.state.user, {entries: count}));
+                })
+                .catch(error => console.log(error));
+                return this.displayFaceBox(this.calculateFaceLocation(response))
+            } else {
+                throw new Error("Error from Clarifai API");
+            }
+        })
+        .catch(error => console.log(error));
     }
 
     onRouteChange = (route) => {
