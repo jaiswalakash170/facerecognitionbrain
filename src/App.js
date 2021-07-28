@@ -90,7 +90,17 @@ class App extends Component {
                                 id: this.state.user.id
                             })
                         }
-                    )
+                    ).then(response => {
+                        if(response.ok){
+                            return response.json();
+                        } else{
+                            throw new Error("Error updating the rank");
+                        }
+                    })
+                    .then(count => {
+                        this.setState(Object.assign(this.state.user, {entries: count}));
+                    })
+                    .catch(error => console.log(error));
                     return this.displayFaceBox(this.calculateFaceLocation(response))
                 } else {
                     throw new Error("Error from Clarifai API");
