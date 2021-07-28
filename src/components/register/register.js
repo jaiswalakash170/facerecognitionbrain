@@ -25,6 +25,19 @@ class Register extends Component {
 
     onSubmitRegister = () => {
         console.log(this.state);
+        fetch('http://localhost:3001/register', {
+            method: 'post',
+            headers: {'content-type': 'application/json'},
+            body: JSON.stringify({
+                name: this.state.registerName,
+                email: this.state.registerEmail,
+                password: this.state.registerPassword
+            })
+        })
+        .then(response => response.json())
+        .then(user => {
+            console.log("User registered: ", user);
+        })
         this.props.onRouteChange('home')
     }
 
