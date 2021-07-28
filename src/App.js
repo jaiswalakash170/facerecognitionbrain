@@ -76,8 +76,26 @@ class App extends Component {
 
     onSubmit = () => {
         this.setState({imageURL: this.state.input});
-        app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-            .then(response => this.displayFaceBox(this.calculateFaceLocation(response)))
+        app.models
+            .predict(
+                Clarifai.FACE_DETECT_MODEL, 
+                this.state.input
+            )
+            .then(response => {
+                if(response){
+                    fetch('http://localhost:3001/image', {
+                            method: 'put',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                id: this.state.user.id
+                            })
+                        }
+                    )
+                    return this.displayFaceBox(this.calculateFaceLocation(response))
+                } else {
+                    throw new Error("Error from Clarifai API");
+                }
+            })
             .catch(error => console.log(error));
     }
 
