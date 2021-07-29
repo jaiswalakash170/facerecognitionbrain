@@ -10,21 +10,43 @@ import SignIn from './components/signin/signin';
 import Register from './components/register/register';
 import 'tachyons';
 import particleOptions from './particles.json';
-import Clarifai from 'clarifai';
-import {clarifai_api_key} from './api_key';
 
-const app = new Clarifai.App(clarifai_api_key);
+const initialState = {
+    input: '',
+    imageURL: '',
+    box: {},
+    route: 'signin',
+    isSignedIn: false,
+    user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: ''
+    }
+}
 
 class App extends Component {
     constructor(){
         super();
-        this.state = {
-            input: '',
-            imageURL: '',
-            box: {},
-            route: 'signin',
-            isSignedIn: false
-        }
+        this.state = initialState
+    }
+
+    loadUser = (user) => {
+        this.setState({user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            entries: user.entries,
+            joined: user.joined
+        }});
+        console.log(this.state);
+    }
+
+    componentDidMount() {
+        fetch('http://localhost:3001')
+        .then(response => response.json())
+        .then(console.log);
     }
 
     calculateFaceLocation = (data) => {
@@ -52,22 +74,55 @@ class App extends Component {
 
     onSubmit = () => {
         this.setState({imageURL: this.state.input});
-        app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-            .then(response => this.displayFaceBox(this.calculateFaceLocation(response)))
-            .catch(error => console.log(error));
+        fetch('http://localhost:3001/imageurl', {
+            method: 'post',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                input: this.state.input
+            })
+        })
+        .then(response => response.json())
+        .then(response => {
+            if(response){
+                fetch('http://localhost:3001/image', {
+                    method: 'put',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        id: this.state.user.id
+                    })
+                })
+                .then(response => {
+                    if(response.ok){
+                        return response.json();
+                    } else{
+                        throw new Error("Error updating the rank");
+                    }
+                })
+                .then(count => {
+                    this.setState(Object.assign(this.state.user, {entries: count}));
+                })
+                .catch(error => console.log(error));
+                return this.displayFaceBox(this.calculateFaceLocation(response))
+            } else {
+                throw new Error("Error from Clarifai API");
+            }
+        })
+        .catch(error => console.log(error));
     }
 
     onRouteChange = (route) => {
         if(route === 'signout'){
-            this.setState({isSignedIn: false});
+            this.setState(initialState);
         } else if(route === 'home'){
             this.setState({isSignedIn: true});
+            this.setState({route: route});
+        } else {
+            this.setState({route: route});
         }
-        this.setState({route: route});
     }
 
     render() {
-        const {isSignedIn, imageURL, route, box} = this.state;
+        const {isSignedIn, imageURL, route, box, user} = this.state;
         return (
             <div className="App">
                 <Particles
@@ -77,15 +132,15 @@ class App extends Component {
                 { route == 'home' ?
                     <div>
                         <Logo />
-                        <Rank />
+                        <Rank name={user.name} entries={user.entries} />
                         <ImageLinkForm 
                         onInputChange={this.onInputChange} 
                         onButtonSubmit={this.onSubmit}/>
                         <FaceRecognition box={box} imageURL={imageURL}/>
                     </div>
                     :(route == 'signin'?
-                    <SignIn onRouteChange={this.onRouteChange} />
-                    :<Register onRouteChange={this.onRouteChange} />
+                    <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
+                    :<Register onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
                     )
                 }
             </div>
